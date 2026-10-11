@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pulse — Workforce &amp; Project Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F3EE; --surface:#FFFFFF; --ink:#1C2321; --ink-soft:#5B6460;
+  --moss:#44614C; --amber:#C98A3B; --rose:#AE4B43; --line:#DEDACB;
+  --sans:"Inter", -apple-system, "Segoe UI", Arial, sans-serif;
+  --disp:"Space Grotesk", "Inter", sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#13171A; --surface:#1B2024; --ink:#ECEAE2; --ink-soft:#9CA39D; --line:#2B3138;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#13171A; --surface:#1B2024; --ink:#ECEAE2; --ink-soft:#9CA39D; --line:#2B3138;
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); min-height:100%;}
+.wrap{max-width:1080px; margin:0 auto; padding:0 24px;}
+
+header.top{border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--bg); z-index:10; padding-top:env(safe-area-inset-top,0px);}
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:18px 0; flex-wrap:wrap; gap:12px;}
+.brand{display:flex; align-items:baseline; gap:10px;}
+.brand .mark{font-family:var(--disp); font-weight:700; font-size:1.4rem;}
+.brand .dot{color:var(--moss);}
+.brand .tag{font-size:.78rem; color:var(--ink-soft);}
+nav.tabs{display:flex; gap:2px;}
+nav.tabs button{font-family:var(--sans); font-size:.85rem; font-weight:500; color:var(--ink-soft);
+  background:none; border:none; padding:8px 14px; cursor:pointer; border-bottom:2px solid transparent;}
+nav.tabs button[aria-current="page"]{color:var(--ink); border-bottom-color:var(--moss);}
+nav.tabs button:hover{color:var(--ink);}
+
+main{padding:36px 0 64px;}
+section{display:none;}
+section.active{display:block;}
+.hero h1{font-family:var(--disp); font-weight:700; font-size:clamp(1.7rem,3.6vw,2.3rem); margin:0 0 8px; max-width:30ch;}
+.hero p{color:var(--ink-soft); max-width:56ch; line-height:1.6; margin:0 0 28px;}
+
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px; margin-bottom:34px;}
+.kpi{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:18px;}
+.kpi b{display:block; font-family:var(--disp); font-size:1.9rem; line-height:1;}
+.kpi span{font-size:.78rem; color:var(--ink-soft);}
+
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:22px; margin-bottom:18px;}
+.panel h2{font-family:var(--disp); font-size:1.05rem; margin:0 0 16px;}
+
+.tree ul{list-style:none; margin:0; padding-left:22px; border-left:1px solid var(--line);}
+.tree > ul{padding-left:0; border-left:none;}
+.tree li{margin:10px 0; position:relative;}
+.person{display:inline-flex; align-items:center; gap:8px; background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:6px 12px; font-size:.85rem;}
+.person .role{color:var(--ink-soft); font-size:.74rem;}
+
+.proj{border-bottom:1px solid var(--line); padding:16px 0;}
+.proj:last-child{border-bottom:none;}
+.proj-head{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; flex-wrap:wrap; gap:6px;}
+.proj-head h3{font-family:var(--disp); font-size:1rem; margin:0;}
+.proj-head .hrs{font-size:.8rem; color:var(--ink-soft);}
+.bar-track{height:8px; background:var(--bg); border-radius:4px; overflow:hidden; margin-bottom:10px;}
+.bar-fill{height:100%; background:var(--moss); border-radius:4px;}
+.proj-team{display:flex; gap:8px; flex-wrap:wrap; font-size:.75rem;}
+.proj-team span{border:1px solid var(--line); border-radius:20px; padding:3px 10px; color:var(--ink-soft);}
+
+table{width:100%; border-collapse:collapse; font-size:.85rem;}
+th{text-align:left; font-weight:500; color:var(--ink-soft); padding:8px 10px; border-bottom:1px solid var(--line); font-size:.76rem;}
+td{padding:10px; border-bottom:1px solid var(--line);}
+.table-scroll{overflow-x:auto;}
+
+.about p{line-height:1.7; color:var(--ink-soft); max-width:62ch;}
+.about h2{font-family:var(--disp); font-size:1.2rem; margin:26px 0 8px;}
+.about ul{color:var(--ink-soft); line-height:1.8; padding-left:20px;}
+.stack{display:flex; gap:8px; flex-wrap:wrap; margin-top:14px;}
+.stack span{font-size:.75rem; border:1px solid var(--line); padding:4px 10px; border-radius:20px; color:var(--ink-soft);}
+
+footer{border-top:1px solid var(--line); padding:20px 0 30px; text-align:center; font-size:.78rem; color:var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap topbar">
+    <div class="brand"><span class="mark">Pulse<span class="dot">.</span></span><span class="tag">Workforce &amp; Project Tracker</span></div>
+    <nav class="tabs" id="tabs">
+      <button data-page="dash" aria-current="page">Dashboard</button>
+      <button data-page="org">Org Chart</button>
+      <button data-page="projects">Projects</button>
+      <button data-page="depts">Departments</button>
+      <button data-page="about">About</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="dash" class="active">
+    <div class="hero">
+      <h1>Every hour, traced back to a project.</h1>
+      <p>A reporting layer over a normalized company schema — employees, departments and project hours all roll up into one view.</p>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div class="panel">
+      <h2>Hours by project</h2>
+      <div id="dashBars"></div>
+    </div>
+  </section>
+
+  <section id="org">
+    <div class="hero">
+      <h1>Who reports to whom.</h1>
+      <p>Built from a single self-referencing <code>SupervisorId</code> column — no separate hierarchy table needed.</p>
+    </div>
+    <div class="panel tree" id="orgTree"></div>
+  </section>
+
+  <section id="projects">
+    <div class="hero">
+      <h1>Active work, by the hour.</h1>
+      <p>Each project rolls up total hours logged and the people currently assigned to it.</p>
+    </div>
+    <div class="panel" id="projList"></div>
+  </section>
+
+  <section id="depts">
+    <div class="hero">
+      <h1>Headcount and pay, by department.</h1>
+      <p>Aggregated straight from the employee table — no duplicated department data to keep in sync.</p>
+    </div>
+    <div class="panel">
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Department</th><th>Employees</th><th>Avg. salary</th><th>Min</th><th>Max</th></tr></thead>
+          <tbody id="deptBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="hero">
+      <h1>About this project</h1>
+      <p>A reporting and management layer built on a classic company database: employees, departments and projects.</p>
+    </div>
+    <div class="about">
+      <h2>The problem</h2>
+      <p>A growing company needed visibility into who works where, who reports to whom, and how staff hours are actually distributed across active projects — without maintaining a separate org-chart tool by hand.</p>
+      <h2>What the schema covers</h2>
+      <ul>
+        <li>A self-referencing <code>Employee → Supervisor</code> relationship, queried with a self-join</li>
+        <li>A many-to-many <code>Employee ↔ Project</code> relationship carrying hours worked</li>
+        <li>Aggregate reporting with <code>GROUP BY</code> — headcount and salary stats per department</li>
+        <li>Views, triggers and stored procedures layered on top for day-to-day operations</li>
+        <li>Formal normalization from a flat spreadsheet-style table through 1NF, 2NF and 3NF</li>
+      </ul>
+      <h2>This demo</h2>
+      <p>The dashboard, org chart and project totals above are reading from sample data shaped exactly like the underlying tables, simplified to run client-side for this showcase.</p>
+      <div class="stack">
+        <span>SQL Server / T-SQL</span><span>Self-Joins</span><span>Aggregate Queries</span>
+        <span>Normalization</span><span>Views &amp; Triggers</span><span>HTML / CSS / JS</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">Case study project — database design and T-SQL implementation by Mohrail Ezzat Basta.</footer>
+
+<script>
+const employees = [
+  {id:1,name:"John Carter",role:"CEO",dept:"Executive",salary:9500,sup:null},
+  {id:2,name:"Franklin Wong",role:"Research Lead",dept:"Research",salary:7200,sup:1},
+  {id:3,name:"Jennifer Wallace",role:"Admin Lead",dept:"Admin",salary:6800,sup:1},
+  {id:4,name:"Ramesh Narayan",role:"Engineer",dept:"Research",salary:5400,sup:2},
+  {id:5,name:"Joyce English",role:"Engineer",dept:"Research",salary:5600,sup:2},
+  {id:6,name:"Alicia Zelaya",role:"Coordinator",dept:"Admin",salary:4300,sup:3},
+  {id:7,name:"Ahmad Jabbar",role:"Analyst",dept:"Admin",salary:4600,sup:3},
+];
+const projects = [
+  {name:"Atlas Migration", dept:"Research", hours:[{id:4,h:22},{id:5,h:18}]},
+  {name:"Quarterly Audit", dept:"Admin", hours:[{id:6,h:14},{id:7,h:16}]},
+  {name:"Client Portal", dept:"Research", hours:[{id:2,h:10},{id:5,h:12}]},
+  {name:"Vendor Onboarding", dept:"Admin", hours:[{id:3,h:8},{id:7,h:9}]},
+];
+
+function byId(id){ return employees.find(e => e.id === id); }
+const totalHours = projects.reduce((s,p) => s + p.hours.reduce((a,h)=>a+h.h,0), 0);
+const depts = [...new Set(employees.map(e=>e.dept))];
+
+function renderKpis(){
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi"><b>${employees.length}</b><span>Employees</span></div>
+    <div class="kpi"><b>${depts.length}</b><span>Departments</span></div>
+    <div class="kpi"><b>${projects.length}</b><span>Active projects</span></div>
+    <div class="kpi"><b>${totalHours}h</b><span>Logged this period</span></div>`;
+}
+
+function renderDashBars(){
+  const max = Math.max(...projects.map(p => p.hours.reduce((a,h)=>a+h.h,0)));
+  document.getElementById('dashBars').innerHTML = projects.map(p => {
+    const h = p.hours.reduce((a,x)=>a+x.h,0);
+    return `<div class="proj-head"><h3>${p.name}</h3><span class="hrs">${h}h</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(h/max*100).toFixed(0)}%"></div></div>`;
+  }).join('');
+}
+
+function renderOrg(){
+  function node(e){
+    const kids = employees.filter(x => x.sup === e.id);
+    return `<li><div class="person">${e.name}<span class="role">${e.role}</span></div>
+      ${kids.length ? `<ul>${kids.map(node).join('')}</ul>` : ''}</li>`;
+  }
+  const roots = employees.filter(e => e.sup === null);
+  document.getElementById('orgTree').innerHTML = `<ul>${roots.map(node).join('')}</ul>`;
+}
+
+function renderProjects(){
+  document.getElementById('projList').innerHTML = projects.map(p => {
+    const h = p.hours.reduce((a,x)=>a+x.h,0);
+    const max = Math.max(...projects.map(pp => pp.hours.reduce((a,x)=>a+x.h,0)));
+    return `<div class="proj">
+      <div class="proj-head"><h3>${p.name}</h3><span class="hrs">${p.dept} · ${h}h total</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(h/max*100).toFixed(0)}%"></div></div>
+      <div class="proj-team">${p.hours.map(x => `<span>${byId(x.id).name} — ${x.h}h</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderDepts(){
+  document.getElementById('deptBody').innerHTML = depts.map(d => {
+    const list = employees.filter(e => e.dept === d);
+    const salaries = list.map(e => e.salary);
+    const avg = Math.round(salaries.reduce((a,b)=>a+b,0)/salaries.length);
+    return `<tr><td>${d}</td><td>${list.length}</td><td>$${avg.toLocaleString()}</td>
+      <td>$${Math.min(...salaries).toLocaleString()}</td><td>$${Math.max(...salaries).toLocaleString()}</td></tr>`;
+  }).join('');
+}
+
+document.getElementById('tabs').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-page]');
+  if(!btn) return;
+  document.querySelectorAll('nav.tabs button').forEach(b => b.removeAttribute('aria-current'));
+  btn.setAttribute('aria-current','page');
+  document.querySelectorAll('main > section').forEach(s => s.classList.remove('active'));
+  document.getElementById(btn.dataset.page).classList.add('active');
+});
+
+renderKpis(); renderDashBars(); renderOrg(); renderProjects(); renderDepts();
+</script>
+</body>
+</html>
